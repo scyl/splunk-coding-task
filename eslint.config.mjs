@@ -41,6 +41,8 @@ export default [
       'jsx-quotes': ['error', 'prefer-double'],
       semi: ['error', 'always'],
       'react/react-in-jsx-scope': 'off', // CRA doesn't need React in scope
+      'react/jsx-indent': ['error', 2],
+      'react/jsx-indent-props': ['error', 2],
     },
     settings: {
       react: {
