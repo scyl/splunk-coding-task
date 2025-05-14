@@ -1,10 +1,4 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ServerComposerForm } from "./elements/server-composer-form";
 
 function App() {
   return (
@@ -12,23 +6,7 @@ function App() {
       <header>
         Server Composer
       </header>
-      <form className="flex justify-around">
-        <div>
-          <label htmlFor="cpu">CPU</label>
-          <Select>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Theme" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="light">1</SelectItem>
-              <SelectItem value="dark">2</SelectItem>
-              <SelectItem value="system">3</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>Memory Size</div>
-        <div>GPU</div>
-      </form>
+      <ServerComposerForm />
     </div>
   );
 }
