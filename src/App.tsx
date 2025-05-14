@@ -9,7 +9,7 @@ import {
 function App() {
   return (
     <div className="flex flex-col">
-      <header className="hover:bg-red-500">
+      <header>
         Server Composer
       </header>
       <form className="flex justify-around">
@@ -20,7 +20,7 @@ function App() {
               <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="light" className="hover:bg-red-500">1</SelectItem>
+              <SelectItem value="light">1</SelectItem>
               <SelectItem value="dark">2</SelectItem>
               <SelectItem value="system">3</SelectItem>
             </SelectContent>
