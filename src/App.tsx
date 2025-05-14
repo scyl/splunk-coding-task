@@ -1,4 +1,8 @@
-import { ServerComposerForm } from "./elements/server-composer-form";
+import { ServerComposerForm, ServerConfig } from "./elements/server-composer-form";
+
+function onValidSubmit(value: ServerConfig) {
+  console.log(value);
+}
 
 function App() {
   return (
@@ -6,7 +10,8 @@ function App() {
       <header>
         Server Composer
       </header>
-      <ServerComposerForm />
+      <ServerComposerForm onValidSubmit={onValidSubmit}/>
+      <hr className="my-8"/>
     </div>
   );
 }

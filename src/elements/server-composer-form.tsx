@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -19,6 +18,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { InputWithSuffix } from "@/components/ui/input-with-suffix";
+import { Checkbox } from "@/components/ui/checkbox";
+
+export type ServerConfig = {
+ cpu: "x86" | "power" | "arm",
+ memorySize: number,
+ gpu: boolean,
+}
 
 const formSchema = z.object({
   cpu: z.enum(["x86", "power", "arm"]),
@@ -31,69 +37,79 @@ const formSchema = z.object({
   gpu: z.boolean(),
 });
 
-export function ServerComposerForm() {
+export function ServerComposerForm({onValidSubmit}: {onValidSubmit: (value: ServerConfig) => void}) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       cpu: undefined,
       memorySize: "",
-      gpu: false
+      gpu: false,
     },
   });
  
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+    onValidSubmit({...values, memorySize: parseInt(values.memorySize, 10)});
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="">
         <div className="flex flex-col">
-          <div className="flex justify-evenly">
-            <div>
-              <FormField
-                control={form.control}
-                name="cpu"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>CPU</FormLabel>
-                    <Select onValueChange={field.onChange}>
-                      <FormControl>
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Select" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="x86">X86</SelectItem>
-                        <SelectItem value="power">Power</SelectItem>
-                        <SelectItem value="arm">ARM</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
+          <div className="flex justify-evenly md:h-[100px] flex-col md:flex-row items-center md:items-start">
+            <FormField
+              control={form.control}
+              name="cpu"
+              render={({ field }) => (
+                <FormItem className="flex flex-col min-w-[240px]">
+                  <FormLabel>CPU</FormLabel>
+                  <Select onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="x86">X86</SelectItem>
+                      <SelectItem value="power">Power</SelectItem>
+                      <SelectItem value="arm">ARM</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage className="text-xs" />
+                </FormItem>
                 )}
               />
-            </div>
-            <div>
-              <FormField
-                control={form.control}
-                name="memorySize"
-                render={({field}) => (
-                  <FormItem>
-                    <FormLabel>Memory Size</FormLabel>
-                    <FormControl>
-                      <InputWithSuffix placeholder="shadcn" suffix="MB" maxLength={9} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+            <FormField
+              control={form.control}
+              name="memorySize"
+              render={({field}) => (
+                <FormItem className="flex flex-col min-w-[240px]">
+                  <FormLabel>Memory Size</FormLabel>
+                  <FormControl>
+                    <InputWithSuffix placeholder="4,096" suffix="MB" maxLength={9} className="w-[180px]" {...field} />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
                 )} 
               />
-            </div>
-            <div>
-
-            </div>
+            <FormField
+              control={form.control}
+              name="gpu"
+              render={({ field }) => (
+                <FormItem className="min-w-[240px]">
+                  <div className="mt-[22px] flex items-center h-[36px]">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                    />
+                    </FormControl>
+                    <FormLabel className="ml-2">
+                      GPU Accelerator Card
+                    </FormLabel>
+                  </div>
+                </FormItem>
+                )}
+              />
           </div>
           <div><Button type="submit">Submit</Button></div>
         </div>

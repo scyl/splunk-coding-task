@@ -14,8 +14,8 @@ function InputWithSuffix({ className, type, suffix, ...props }: React.ComponentP
         className
       )}
     >
-      <input type={type} className="focus:outline-none" {...props}></input>
-      <div className="ml-2 text-muted-foreground">{suffix}</div>
+      <input type={type} className="text-sm focus:outline-none grow w-full" {...props}></input>
+      <div className="ml-2 text-muted-foreground text-sm w-min">{suffix}</div>
     </div>
   );
 }
