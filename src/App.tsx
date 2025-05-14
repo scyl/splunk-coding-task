@@ -1,18 +1,30 @@
-import "./App.css";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
+    <div className="flex flex-col">
+      <header className="hover:bg-red-500">
         Server Composer
       </header>
-      <form className="Form">
+      <form className="flex justify-around">
         <div>
           <label htmlFor="cpu">CPU</label>
-          <select id="cpu">
-            <option value="volvo">Volvo</option>
-            <option value="saab">Saab</option>
-          </select>
+          <Select>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="light" className="hover:bg-red-500">1</SelectItem>
+              <SelectItem value="dark">2</SelectItem>
+              <SelectItem value="system">3</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div>Memory Size</div>
         <div>GPU</div>
