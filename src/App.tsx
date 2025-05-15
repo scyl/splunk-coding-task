@@ -1,65 +1,71 @@
+import { useState } from "react";
 import { CPU, ServerComposerForm, ServerConfig } from "./elements/server-composer-form";
+import { ServerOptionResult } from "./elements/server-option-result";
 
-let showResult = false;
-const result = {
-  tower: true,
-  rack: true,
-  mainframe: true,
-  highDensity: true,
-};
-
-function onValidSubmit(value: ServerConfig) {
-  console.log(value);
-  resetResult();
-  console.log(result);
-
-  if (value.gpu) {
-    result.tower = false;
-    result.rack = false;
-    result.mainframe = false;
-    if (value.cpu !== CPU.ARM || value.memorySize <= 524288) {
-      result.highDensity = false;
-    }
-  }
-
-  console.log("after gpu", JSON.stringify(result));
-
-
-  if (value.cpu === CPU.POWER) {
-    result.highDensity = false;
-  } else {
-    result.mainframe = false;
-  }
-
-  console.log("after power cpu", JSON.stringify(result));
-
-  if (value.memorySize < 2048) {
-    result.highDensity = false;
-    result.mainframe = false;
-    result.rack = false;
-    result.tower = false;
-  } else if (value.memorySize < 131072) {
-    result.rack = false;
-  }
-
-  console.log(result);
-}
-
-function resetResult() {
-  result.highDensity = true;
-  result.mainframe = true;
-  result.rack = true;
-  result.tower = true;
+export type ServerModelResult = {
+  tower: boolean;
+  rack: boolean;
+  mainframe: boolean;
+  highDensity: boolean;
 }
 
 function App() {
+  const [showResult, setShowResult] = useState(false);
+  const [result, setResult] = useState<ServerModelResult>({
+    tower: true,
+    rack: true,
+    mainframe: true,
+    highDensity: true,
+  });
+
+  function onValidSubmit(value: ServerConfig) {
+    const newResult = {
+      tower: true,
+      rack: true,
+      mainframe: true,
+      highDensity: true,
+    };
+
+    if (value.gpu) {
+      newResult.tower = false;
+      newResult.rack = false;
+      newResult.mainframe = false;
+      if (value.cpu !== CPU.ARM || value.memorySize < 524288) {
+        newResult.highDensity = false;
+      }
+    } else {
+      // implied from example 3
+      // must be because of rule 1?
+      newResult.highDensity = false;
+    }
+
+    if (value.cpu === CPU.POWER) {
+      newResult.highDensity = false;
+    } else {
+      newResult.mainframe = false;
+    }
+
+    if (value.memorySize < 2048) {
+      newResult.highDensity = false;
+      newResult.mainframe = false;
+      newResult.rack = false;
+      newResult.tower = false;
+    } else if (value.memorySize < 131072) {
+      newResult.rack = false;
+    }
+
+    setShowResult(true);
+    setResult(newResult);
+  }
+
   return (
     <div className="flex flex-col">
-      <header>
+      <header className="text-2xl m-4">
         Server Composer
       </header>
-      <ServerComposerForm onValidSubmit={onValidSubmit}/>
+      <ServerComposerForm onValidSubmit={onValidSubmit} />
       <hr className="my-8"/>
+      <ServerOptionResult result={result} show={showResult} />
     </div>
   );
 }
