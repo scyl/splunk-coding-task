@@ -20,14 +20,20 @@ import {
 import { InputWithSuffix } from "@/components/ui/input-with-suffix";
 import { Checkbox } from "@/components/ui/checkbox";
 
+export enum CPU {
+  X86 = "x86",
+  POWER = "power",
+  ARM = "arm",
+}
+
 export type ServerConfig = {
- cpu: "x86" | "power" | "arm",
+ cpu: CPU,
  memorySize: number,
  gpu: boolean,
 }
 
 const formSchema = z.object({
-  cpu: z.enum(["x86", "power", "arm"]),
+  cpu: z.nativeEnum(CPU),
   memorySize: z.string().refine((value) => {
     if (!/^\d{1,3}(,\d{3})*$/.test(value)) {
       return false;
@@ -48,7 +54,7 @@ export function ServerComposerForm({onValidSubmit}: {onValidSubmit: (value: Serv
   });
  
   function onSubmit(values: z.infer<typeof formSchema>) {
-    onValidSubmit({...values, memorySize: parseInt(values.memorySize, 10)});
+    onValidSubmit({...values, memorySize: parseInt(values.memorySize.replaceAll(",", ""), 10)});
   }
 
   return (
