@@ -3,3 +3,14 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom";
+
+global.ResizeObserver = class {
+  constructor() {
+    // you could store the callback if you want to trigger it manually
+  }
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
+window.HTMLElement.prototype.scrollIntoView = jest.fn();

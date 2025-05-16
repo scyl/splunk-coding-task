@@ -36,23 +36,36 @@ const formSchema = z.object({
   cpu: z.nativeEnum(CPU),
   memorySize: z.
     string().
-    refine((value) => {
+    superRefine((value, ctx) => {
       if (!/^\d{1,3}(,\d{3})*$/.test(value)) {
-        return false;
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Comma separated positive integer only",
+        });
       }
-      return true;
-    }, "Comma separated positive integer only").
-    refine((value) => {
+
       const valueNum = parseInt(value.replaceAll(",", ""), 10);
-      return isValidMemorySize(valueNum);
-    }, "Must be multiple of 1024 and a power of 2"),
+      if (!isValidMemorySize(valueNum)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Must be multiple of 1024 and a power of 2",
+        });
+      }
+
+      if (valueNum > 8388608) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Must be at or below 8,388,608"
+        });
+      }
+    }),
   gpu: z.boolean(),
 });
 
 // A number is a valid memory size if
 // it is greater than or equal to 1024
 // and also a power of 2
-function isValidMemorySize(num: number) {
+export function isValidMemorySize(num: number) {
   return num >= 1024 && (num & (num - 1)) === 0;
 }
 
