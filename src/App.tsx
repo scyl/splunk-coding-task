@@ -10,7 +10,7 @@ export type ServerModelResult = {
 }
 
 function App() {
-  const [showResult, setShowResult] = useState(false);
+  const [hiddenResult, setHiddenResult] = useState(true);
   const [result, setResult] = useState<ServerModelResult>({
     tower: true,
     rack: true,
@@ -54,7 +54,7 @@ function App() {
       newResult.rack = false;
     }
 
-    setShowResult(true);
+    setHiddenResult(false);
     setResult(newResult);
   }
 
@@ -65,7 +65,7 @@ function App() {
       </header>
       <ServerComposerForm onValidSubmit={onValidSubmit} />
       <hr className="my-8"/>
-      <ServerOptionResult result={result} show={showResult} />
+      <ServerOptionResult result={result} hidden={hiddenResult} />
     </div>
   );
 }

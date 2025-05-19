@@ -1,6 +1,5 @@
-import { fireEvent, render, screen, waitFor, waitForElementToBeRemoved, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, waitForElementToBeRemoved, within } from "@testing-library/react";
 import { isValidMemorySize, ServerComposerForm } from "./server-composer-form";
-import userEvent from "@testing-library/user-event";
 
 test.each([
   { name: "number below 1024", value: 2, expectedResult: false },
@@ -13,30 +12,40 @@ test.each([
 
 
 describe("Server composer form", () => {
+  beforeEach(() => {
+    cleanup();
+  });
+
   test("Have field for CPU, Memory size and GPU", () => {
     render(<ServerComposerForm onValidSubmit={() => {}}/>);
     
-    expect(screen.findByLabelText("CPU")).toBeDefined();
-    expect(screen.findByLabelText("Memory Size")).toBeDefined();
-    expect(screen.findByLabelText("GPU Accelerator Card")).toBeDefined();
+    expect(screen.getByLabelText("CPU")).toBeDefined();
+    expect(screen.getByLabelText("Memory Size")).toBeDefined();
+    expect(screen.getByLabelText("GPU Accelerator Card")).toBeDefined();
   });
 
   test("CPU dropdown have expected options", () => {
     render(<ServerComposerForm onValidSubmit={() => {}}/>);
-    screen.getByLabelText("CPU").click();
-    
-    expect(screen.getByText("X86")).toBeVisible();
-    expect(screen.getByText("Power")).toBeVisible();
-    expect(screen.getByText("ARM")).toBeVisible();
+    act(() => {
+      screen.getByLabelText("CPU").click();
+    });
+
+    expect(screen.getByText("X86", {selector: "span"})).toBeVisible();
+    expect(screen.getByText("Power", {selector: "span"})).toBeVisible();
+    expect(screen.getByText("ARM", {selector: "span"})).toBeVisible();
   });
 
   test("Select CPU option", async () => {
     render(<ServerComposerForm onValidSubmit={() => {}}/>);
     const cpuCombo = screen.getByRole("combobox", { name: /cpu/i });
-    cpuCombo.click();
+    act(() => {
+      cpuCombo.click();
+    });
     const listbox = await screen.findByRole("listbox");
-    const option = await within(listbox).findByRole("option", { name: /^x86$/i });
-    option.click();
+    const option = within(listbox).getByRole("option", { name: /^x86$/i });
+    act(() => {
+      option.click();
+    });
 
     await waitFor(() => {
       expect(within(cpuCombo).getByText("X86")).toBeVisible();
@@ -47,8 +56,11 @@ describe("Server composer form", () => {
     render(<ServerComposerForm onValidSubmit={() => {}}/>);
 
     const memorySizeInput = screen.getByLabelText("Memory Size");
-    fireEvent.change(memorySizeInput, {target: {value: "1024"}});
-    screen.getByText("Submit").click();
+    act(() => {
+      fireEvent.change(memorySizeInput, {target: {value: "1024"}});
+      screen.getByText("Submit").click();
+    });
+
     await waitFor(() => {
       expect(screen.getByText("Comma separated positive integer only")).toBeVisible();
     });
@@ -65,8 +77,11 @@ describe("Server composer form", () => {
     render(<ServerComposerForm onValidSubmit={() => {}}/>);
 
     const memorySizeInput = screen.getByLabelText("Memory Size");
-    fireEvent.change(memorySizeInput, {target: {value: input}});
-    screen.getByText("Submit").click();
+    act(() => {
+      fireEvent.change(memorySizeInput, {target: {value: input}});
+      screen.getByText("Submit").click();
+    });
+
     await waitFor(() => {
       expect(screen.getByText(errorMessage)).toBeVisible();
     });
@@ -81,12 +96,17 @@ describe("Server composer form", () => {
   ])("Valid memory size: $input", async ({input}) => {
     const onValidSubmit = jest.fn();
     render(<ServerComposerForm onValidSubmit={onValidSubmit}/>);
-    screen.getByLabelText("CPU").click();
-    (await screen.findByRole("option", { name: /^x86$/i })).click();
+    act(() => {
+      screen.getByLabelText("CPU").click();
+    });
+    const x86Option = await screen.findByRole("option", { name: /^x86$/i });
+    act(() => {
+      x86Option.click();
 
-    const memorySizeInput = screen.getByLabelText("Memory Size");
-    fireEvent.change(memorySizeInput, {target: {value: input}});
-    screen.getByText("Submit").click();
+      const memorySizeInput = screen.getByLabelText("Memory Size");
+      fireEvent.change(memorySizeInput, {target: {value: input}});
+      screen.getByText("Submit").click();
+    });
 
     await waitFor(() => {
       expect(onValidSubmit).toBeCalled();
@@ -95,7 +115,9 @@ describe("Server composer form", () => {
 
   test("GPU checkbox is selectable", async () => {
     render(<ServerComposerForm onValidSubmit={() => {}}/>);
-    screen.getByLabelText("GPU Accelerator Card").click();
+    act(() => {
+      screen.getByLabelText("GPU Accelerator Card").click();
+    });
 
     await waitFor(() => {
       expect(screen.getByLabelText("GPU Accelerator Card")).toBeChecked();
@@ -106,12 +128,17 @@ describe("Server composer form", () => {
     const onValidSubmit = jest.fn();
     render(<ServerComposerForm onValidSubmit={onValidSubmit}/>);
 
-    screen.getByLabelText("CPU").click();
-    (await screen.findByRole("option", { name: /^x86$/i })).click();
+    act(() => {
+      screen.getByLabelText("CPU").click();
+    });
+    const x86Option = await screen.findByRole("option", { name: /^x86$/i });
+    act(() => {
+      x86Option.click();
 
-    const memorySizeInput = screen.getByLabelText("Memory Size");
-    fireEvent.change(memorySizeInput, {target: {value: "4,096"}});
-    screen.getByText("Submit").click();
+      const memorySizeInput = screen.getByLabelText("Memory Size");
+      fireEvent.change(memorySizeInput, {target: {value: "4,096"}});
+      screen.getByText("Submit").click();
+    });
 
     await waitFor(() => {
       expect(onValidSubmit).toBeCalledTimes(1);
@@ -127,15 +154,20 @@ describe("Server composer form", () => {
     const onValidSubmit = jest.fn();
     render(<ServerComposerForm onValidSubmit={onValidSubmit}/>);
 
-    screen.getByLabelText("CPU").click();
-    (await screen.findByRole("option", { name: /^power$/i })).click();
+    act(() => {
+      screen.getByLabelText("CPU").click();
+    });
+    const x86Option = await screen.findByRole("option", { name: /^power$/i });
+    act(() => {
+      x86Option.click();
 
-    const memorySizeInput = screen.getByLabelText("Memory Size");
-    fireEvent.change(memorySizeInput, {target: {value: "16,384"}});
-    
-    screen.getByLabelText("GPU Accelerator Card").click();
-    
-    screen.getByText("Submit").click();
+      const memorySizeInput = screen.getByLabelText("Memory Size");
+      fireEvent.change(memorySizeInput, {target: {value: "16,384"}});
+      
+      screen.getByLabelText("GPU Accelerator Card").click();
+      
+      screen.getByText("Submit").click();
+    });
     
     await waitFor(() => {
       expect(onValidSubmit).toBeCalledTimes(1);

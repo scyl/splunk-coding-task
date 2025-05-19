@@ -1,23 +1,31 @@
 import { ServerModelResult } from "@/app";
 
-export function ServerOptionResult({result, show}: {result: ServerModelResult, show: boolean}) {
-  if (!show) {
-    return null;
-  }
+export function ServerOptionResult({result, hidden}: {result: ServerModelResult, hidden: boolean}) {
   return (
-    <div className="m-4">
+    <div className="m-4" hidden={hidden}>
       <div className="text-xl">Server Model Options</div>
-      <ServerOptionModel name="Tower Server" show={result.tower} />
-      <ServerOptionModel name="4U Rack Server" show={result.rack} />
-      <ServerOptionModel name="Mainframe" show={result.mainframe} />
-      <ServerOptionModel name="High Density Server" show={result.highDensity} />
+      <ServerOptionModel name="Tower Server" hidden={!result.tower} />
+      <ServerOptionModel name="4U Rack Server" hidden={!result.rack} />
+      <ServerOptionModel name="Mainframe" hidden={!result.mainframe} />
+      <ServerOptionModel name="High Density Server" hidden={!result.highDensity} />
+      <NoServerOptions result={result} />
     </div>
   );
 }
 
-function ServerOptionModel({name, show}: {name: string, show: boolean}) {
-  if (!show) {
-    return null;
+function ServerOptionModel({name, hidden}: {name: string, hidden: boolean}) {
+  return <div className="ml-4" hidden={hidden}>{name}</div>;
+}
+
+function NoServerOptions({result}: {result: ServerModelResult}) {
+  let hidden = true;
+  if (
+    !result.tower &&
+    !result.rack &&
+    !result.mainframe &&
+    !result.highDensity
+  ) {
+    hidden = false
   }
-  return <div className="ml-4">{name}</div>;
+  return <div className="ml-4" hidden={hidden}>No Options</div>;
 }
